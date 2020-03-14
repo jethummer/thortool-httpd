@@ -10,14 +10,13 @@ var (
 	help  bool
 	path  string
 	port  string
-	split string
 )
 
 func init() {
 	flag.BoolVar(&help, "h", false, "this help")
 
-	flag.StringVar(&path, "p", "", "web server port, default is 8088")
-	flag.StringVar(&port, "w", "", "web server filepath, default is ../Assets/StreamingAssets")
+	flag.StringVar(&port, "p", "8088", "web server port")
+	flag.StringVar(&path, "w", "../Publish/Editor", "web root path")
 
 	// 改变默认的 Usage
 	flag.Usage = usage
@@ -25,7 +24,7 @@ func init() {
 
 func usage() {
 	fmt.Fprintf(os.Stderr, `httpd version: 0.0.1
-Usage: httpd [-help] [-p port] [-w watchpath]
+Usage: httpd [-help] [-p port] [-w webpath]
 `)
 	flag.PrintDefaults()
 }
@@ -34,18 +33,12 @@ func ParseArgs() {
 
 	flag.Parse()
 
-	if help {
+	if help || len(path) == 0 || len(port) == 0 {
 		flag.Usage()
-		return
-	} else if path != "" {
-		webPath = path
-	} else {
-		webPath = "../Assets/StreamingAssets"
+		os.Exit(0)
 	}
-	if port != "" {
-		webPort = port
-	} else {
-		webPort = "8088"
-	}
+
+	webPort = port
+	webPath = path
 
 }
